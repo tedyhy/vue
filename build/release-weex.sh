@@ -1,3 +1,4 @@
+# 发布 vue for weex 的 shell 脚本
 set -e
 CUR_VERSION=`node build/get-weex-version.js -c`
 NEXT_VERSION=`node build/get-weex-version.js`

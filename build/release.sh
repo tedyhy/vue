@@ -1,3 +1,4 @@
+# 发布版本的 shell 脚本
 set -e
 
 if [[ -z $1 ]]; then

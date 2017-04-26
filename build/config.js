@@ -3,9 +3,12 @@ const flow = require('rollup-plugin-flow-no-whitespace')
 const buble = require('rollup-plugin-buble')
 const replace = require('rollup-plugin-replace')
 const alias = require('rollup-plugin-alias')
+// 如果没有指定 VERSION，就从 package.json 的 version 字段获取版本信息
 const version = process.env.VERSION || require('../package.json').version
+// 获取 vue for weex 的版本信息
 const weexVersion = process.env.WEEX_VERSION || require('../packages/weex-vue-framework/package.json').version
 
+// vue 版本信息
 const banner =
   '/*!\n' +
   ' * Vue.js v' + version + '\n' +
