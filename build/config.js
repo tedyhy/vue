@@ -1,8 +1,8 @@
 const path = require('path')
-const flow = require('rollup-plugin-flow-no-whitespace')
-const buble = require('rollup-plugin-buble')
-const replace = require('rollup-plugin-replace')
-const alias = require('rollup-plugin-alias')
+const flow = require('rollup-plugin-flow-no-whitespace') // 去除源码中 flow 类型检查相关代码，并去除后续的遗留空格
+const buble = require('rollup-plugin-buble') // 用 buble 转换 ES2015 代码
+const replace = require('rollup-plugin-replace') // 打包时替换环境变量
+const alias = require('rollup-plugin-alias') // 为模块起个别名，打包过程中对各个模块做路径映射
 // 如果没有指定 VERSION，就从 package.json 的 version 字段获取版本信息
 const version = process.env.VERSION || require('../package.json').version
 // 获取 vue for weex 的版本信息
@@ -16,6 +16,8 @@ const banner =
   ' * Released under the MIT License.\n' +
   ' */'
 
+// vue for weex Factory wrap plugin
+// 模块包裹插件
 const weexFactoryPlugin = {
   intro () {
     return 'module.exports = function weexFactory (exports, renderer) {'
@@ -25,6 +27,7 @@ const weexFactoryPlugin = {
   }
 }
 
+// 各种构建任务配置
 const builds = {
   // Runtime only (CommonJS). Used by bundlers e.g. Webpack & Browserify
   'web-runtime-cjs': {
@@ -130,27 +133,32 @@ const builds = {
   }
 }
 
+// 获取 build 配置，并处理返回新的 config
 function genConfig (opts) {
+  // 根据传参 opts 初始化新的 rollup config
   const config = {
-    entry: opts.entry,
-    dest: opts.dest,
-    external: opts.external,
-    format: opts.format,
-    banner: opts.banner,
-    moduleName: 'Vue',
+    entry: opts.entry, // 打包入口
+    dest: opts.dest, // 打包出口
+    external: opts.external, // 额外依赖
+    format: opts.format, // 打包成什么格式模块
+    banner: opts.banner, // banner 信息
+    moduleName: 'Vue', // 统一模块名称
+    // rollup 打包插件集
     plugins: [
+      // 替换源码内的环境变量：__WEEX__、__WEEX_VERSION__、__VERSION__
       replace({
-        __WEEX__: !!opts.weex,
-        __WEEX_VERSION__: weexVersion,
-        __VERSION__: version
+        __WEEX__: !!opts.weex, // 是否是 vue for weex
+        __WEEX_VERSION__: weexVersion, // vue for weex version
+        __VERSION__: version // vue version
       }),
       flow(),
       buble(),
-      alias(Object.assign({}, require('./alias'), opts.alias))
-    ].concat(opts.plugins || [])
+      alias(Object.assign({}, require('./alias'), opts.alias)) // 配置别名，打包过程中对各个模块做路径映射
+    ].concat(opts.plugins || []) // 联合 plugins
   }
 
   if (opts.env) {
+    // 如果指定了 env 配置，那么新增一个关于替换 process.env.NODE_ENV 环境变量的插件
     config.plugins.push(replace({
       'process.env.NODE_ENV': JSON.stringify(opts.env)
     }))
@@ -159,9 +167,13 @@ function genConfig (opts) {
   return config
 }
 
+// 如果指定了 TARGET，就只构建指定的 TARGET 子任务
+// 否则模块返回两个方法：getBuild、getAllBuilds
 if (process.env.TARGET) {
   module.exports = genConfig(builds[process.env.TARGET])
 } else {
+  // 根据传参 name，获取子任务配置信息
   exports.getBuild = name => genConfig(builds[name])
+  // 获取所有子任务配置信息，返回数组
   exports.getAllBuilds = () => Object.keys(builds).map(name => genConfig(builds[name]))
 }

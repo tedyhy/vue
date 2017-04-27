@@ -1,3 +1,4 @@
+// 配置别名
 const path = require('path')
 
 module.exports = {
