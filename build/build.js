@@ -33,6 +33,7 @@ if (process.argv[2]) {
   })
 }
 
+// 根据任务遍历构建筛选出来的多个子任务
 build(builds)
 
 // 根据任务遍历构建子任务
@@ -57,16 +58,26 @@ function buildEntry (config) {
   // 根据后缀判断是否要生成生产环境代码
   const isProd = /min\.js$/.test(config.dest)
   // 利用 rollup 根据子任务的配置信息进行异步打包
+  // 这里的 config 用到了里面的 entry、plugins 等配置信息
   return rollup.rollup(config).then(bundle => {
+    // 1.这里的 config 用到了里面的 format、dest 等配置信息
+    // 2.bundle.write(config) 也可以，但是它直接生成文件了，
+    // 不能像 bundle.generate(config) 可以在 code 写入文件前后做额外处理
     const code = bundle.generate(config).code
+    // 如果是要生成生产代码，则添加 banner 信息，压缩源代码后写入文件
     if (isProd) {
       var minified = (config.banner ? config.banner + '\n' : '') + uglify.minify(code, {
         fromString: true,
         output: {
+          // Pass this flag if you don’t care about full compliance with Internet Explorer 6-8 quirks（怪癖）
           screw_ie8: true,
+          // Setting this flag converts those characters into the \uxxxxx pattern.
           ascii_only: true
         },
         compress: {
+          // 假如返回值没被调用则可以安全移除的函数。
+          // 例如`--pure-funcs Math.floor console.info`(需要设置 `--compress`)
+          // 参考：https://segmentfault.com/a/1190000008995453
           pure_funcs: ['makeMap']
         }
       }).code
@@ -77,15 +88,19 @@ function buildEntry (config) {
   })
 }
 
+// 将 code 源代码异步写入文件，写入成功之后可以做 gzip 压缩并打印信息
 function write (dest, code, zip) {
   return new Promise((resolve, reject) => {
+    // 打印 gzip 后相关信息
     function report (extra) {
       console.log(blue(path.relative(process.cwd(), dest)) + ' ' + getSize(code) + (extra || ''))
       resolve()
     }
 
+    // 异步写入文件
     fs.writeFile(dest, code, err => {
       if (err) return reject(err)
+      // 是否需要 gzip 压缩
       if (zip) {
         zlib.gzip(code, (err, zipped) => {
           if (err) return reject(err)
