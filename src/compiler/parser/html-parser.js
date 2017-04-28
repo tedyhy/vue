@@ -1,28 +1,35 @@
 /**
  * Not type-checking this file because it's mostly vendor code.
+ * 此文件没有类型校验，因为它几乎是 vendor 代码
  */
 
 /*!
  * HTML Parser By John Resig (ejohn.org)
  * Modified by Juriy "kangax" Zaytsev
  * Original code by Erik Arvidsson, Mozilla Public License
- * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
+ * 参考 http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
+ * HTML 分析
  */
 
 import { makeMap, no } from 'shared/util'
 import { isNonPhrasingTag } from 'web/compiler/util'
 
 // Regular Expressions for parsing tags and attributes
-const singleAttrIdentifier = /([^\s"'<>/=]+)/
+// 分析 tags 和 attributes 的正则表达式
+const singleAttrIdentifier = /([^\s"'<>/=]+)/ // 单个属性标识符
 const singleAttrAssign = /(?:=)/
 const singleAttrValues = [
   // attr value double quotes
+  // 属性值双引号
   /"([^"]*)"+/.source,
   // attr value, single quotes
+  // 属性值单引号
   /'([^']*)'+/.source,
   // attr value, no quotes
+  // 属性值无引号
   /([^\s"'=<>`]+)/.source
 ]
+// 属性正则
 const attribute = new RegExp(
   '^\\s*' + singleAttrIdentifier.source +
   '(?:\\s*(' + singleAttrAssign.source + ')' +
@@ -40,15 +47,19 @@ const doctype = /^<!DOCTYPE [^>]+>/i
 const comment = /^<!--/
 const conditionalComment = /^<!\[/
 
+// 火狐浏览器关于正则的一个 bug，参考 https://bugzilla.mozilla.org/show_bug.cgi?id=369778
 let IS_REGEX_CAPTURING_BROKEN = false
 'x'.replace(/x(.)?/g, function (m, g) {
   IS_REGEX_CAPTURING_BROKEN = g === ''
 })
 
 // Special Elements (can contain anything)
+// 用于判断是否是 'script,style,textarea' 元素
 const isPlainTextElement = makeMap('script,style,textarea', true)
+// 正则缓存池
 const reCache = {}
 
+// html 标签解码 map 映射
 const decodingMap = {
   '&lt;': '<',
   '&gt;': '>',
@@ -56,11 +67,22 @@ const decodingMap = {
   '&amp;': '&',
   '&#10;': '\n'
 }
-const encodedAttr = /&(?:lt|gt|quot|amp);/g
-const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#10);/g
+// 带 ?: 的 () 里面内容是不会被捕获的
+const encodedAttr = /&(?:lt|gt|quot|amp);/g // 非捕获转码：< > " &
+const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#10);/g // 非捕获转码：< > " & 换行（Unicode编码）
 
+/**
+ * 解码属性
+ * IE 上的一个 bug, 如果 dom 节点的属性分多行书写，那么它会把 '\n' 转义成 &#10; ，
+ * 而其它浏览器并不会这么做，因此需要手工处理。
+ * @param  {string} value                html 字符串
+ * @param  {boolean} shouldDecodeNewlines 是否解码换行
+ * @return {string}                      解码后的 html 字符串
+ */
 function decodeAttr (value, shouldDecodeNewlines) {
+  // 根据传参 shouldDecodeNewlines 判断是否需要解码换行
   const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
+  // 将 html 中的 html 编码通过正则解码
   return value.replace(re, match => decodingMap[match])
 }
 
@@ -74,6 +96,7 @@ export function parseHTML (html, options) {
   while (html) {
     last = html
     // Make sure we're not in a plaintext content element like script/style
+    // 确保当前 lastTag 不是 'script,style,textarea' 元素
     if (!lastTag || !isPlainTextElement(lastTag)) {
       let textEnd = html.indexOf('<')
       if (textEnd === 0) {

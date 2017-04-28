@@ -189,16 +189,19 @@ export function toObject (arr: Array<any>): Object {
 
 /**
  * Perform no operation.
+ * 空函数
  */
 export function noop () {}
 
 /**
  * Always return false.
+ * 此函数总是返回 false
  */
 export const no = () => false
 
 /**
  * Return same value
+ * 接收任何类型值，并返回原值
  */
 export const identity = (_: any) => _
 
