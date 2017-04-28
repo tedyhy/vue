@@ -23,12 +23,19 @@ export function toNumber (val: string): number | string {
 /**
  * Make a map and return a function for checking if a key
  * is in that map.
+ * @param {string} str key 值
+ * @param {?boolean} expectsLowerCase key 值是否转换成小写【参数可选】
+ * @return {func} 返回一个函数，此函数返回值为 true | undefined。
+ * 
+ * 创建一个 map，然后返回一个函数用来检查一个 key 是否在此 map 里。
  */
 export function makeMap (
   str: string,
   expectsLowerCase?: boolean
 ): (key: string) => true | void {
+  // 创建一个 map 空对象
   const map = Object.create(null)
+  // 用','分隔传参 str 成一个字符串数组，并遍历数组，生成 key 值 map 映射
   const list: Array<string> = str.split(',')
   for (let i = 0; i < list.length; i++) {
     map[list[i]] = true
@@ -40,6 +47,7 @@ export function makeMap (
 
 /**
  * Check if a tag is a built-in tag.
+ * 调用 makeMap 生成一个函数，用来检查一个 tag 是否是内置 tag
  */
 export const isBuiltInTag = makeMap('slot,component', true)
 

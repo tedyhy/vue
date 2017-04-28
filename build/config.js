@@ -1,8 +1,8 @@
 const path = require('path')
 const flow = require('rollup-plugin-flow-no-whitespace') // 去除源码中 flow 类型检查相关代码，并去除后续的遗留空格
-const buble = require('rollup-plugin-buble') // 用 buble 转换 ES2015 代码
+const buble = require('rollup-plugin-buble') // 替代 babel，用 buble 转换 ES2015 代码
 const replace = require('rollup-plugin-replace') // 打包时替换环境变量
-const alias = require('rollup-plugin-alias') // 为模块起个别名，打包过程中对各个模块做路径映射
+const alias = require('rollup-plugin-alias') // 为模块起个别名，打包过程中对各个模块做路径映射，这样代码中就可以用 src 作为根目录引用模块了
 // 如果没有指定 VERSION，就从 package.json 的 version 字段获取版本信息
 const version = process.env.VERSION || require('../package.json').version
 // 获取 vue for weex 的版本信息

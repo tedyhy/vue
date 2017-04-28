@@ -1,5 +1,6 @@
 /* @flow */
 
+// 将整合好的 compiler 和 runtime 再一次整合封装，最终导出浏览器用的 vue 构造函数
 import Vue from './web-runtime'
 import config from 'core/config'
 import { query } from 'web/util/index'

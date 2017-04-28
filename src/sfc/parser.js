@@ -1,13 +1,18 @@
 /* @flow */
+// 标识此文件需要通过 flow type 类型校验
 
 import deindent from 'de-indent'
 import { parseHTML } from 'compiler/parser/html-parser'
 import { makeMap } from 'shared/util'
 
+// 分割正则
 const splitRE = /\r?\n/g
+// 替换正则
 const replaceRE = /./g
+// 检查一个 tag 是否是 'script,style,template' 中的一种
 const isSpecialTag = makeMap('script,style,template', true)
 
+// 自定义对象数据类型
 type Attribute = {
   name: string,
   value: string
@@ -15,6 +20,11 @@ type Attribute = {
 
 /**
  * Parse a single-file component (*.vue) file into an SFC Descriptor Object.
+ * 分析单文件组件（即：*.vue）文件成一个 SFC 描述对象
+ *
+ * @param {string} content vue 组件模板字符串内容
+ * @param {Object} options 选项配置，默认空对象
+ * @return {SFCDescriptor} 返回 sfc 描述对象，此类型在 flow/compiler.js 里有声明
  */
 export function parseComponent (
   content: string,

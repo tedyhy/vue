@@ -150,8 +150,10 @@ declare type ASTText = {
 }
 
 // SFC-parser related declarations
+// SFC-parser 相关声明
 
 // an object format describing a single-file component.
+// 声明 SFCDescriptor 类型，用于描述 single-file component（单个文件组件）的对象格式
 declare type SFCDescriptor = {
   template: ?SFCBlock;
   script: ?SFCBlock;
@@ -159,6 +161,7 @@ declare type SFCDescriptor = {
   customBlocks: Array<SFCCustomBlock>;
 }
 
+// 声明 SFCCustomBlock 类型
 declare type SFCCustomBlock = {
   type: string;
   content: string;
@@ -168,6 +171,7 @@ declare type SFCCustomBlock = {
   attrs: {[attribute:string]: string};
 }
 
+// 声明 SFCBlock 类型
 declare type SFCBlock = {
   type: string;
   content: string;
