@@ -43,11 +43,13 @@ const qnameCapture = '((?:' + ncname + '\\:)?' + ncname + ')'
 const startTagOpen = new RegExp('^<' + qnameCapture)
 const startTagClose = /^\s*(\/?)>/
 const endTag = new RegExp('^<\\/' + qnameCapture + '[^>]*>')
-const doctype = /^<!DOCTYPE [^>]+>/i
-const comment = /^<!--/
-const conditionalComment = /^<!\[/
+const doctype = /^<!DOCTYPE [^>]+>/i // DOCTYPE
+const comment = /^<!--/ // 评论
+const conditionalComment = /^<!\[/ // 条件评论
 
 // 火狐浏览器关于正则的一个 bug，参考 https://bugzilla.mozilla.org/show_bug.cgi?id=369778
+// RESOLVED FIXED in mozilla34，所以 mozilla34 之前是存在这个 bug 的。
+// 下例中，正常情况下应该返回：x undefined。但是火狐浏览器下返回：x ''。
 let IS_REGEX_CAPTURING_BROKEN = false
 'x'.replace(/x(.)?/g, function (m, g) {
   IS_REGEX_CAPTURING_BROKEN = g === ''
