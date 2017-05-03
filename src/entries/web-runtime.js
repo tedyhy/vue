@@ -1,5 +1,6 @@
 /* @flow */
 
+// Vue 核心
 import Vue from 'core/index'
 import config from 'core/config'
 import { patch } from 'web/runtime/patch'

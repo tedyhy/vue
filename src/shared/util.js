@@ -219,7 +219,7 @@ export const no = () => false
 
 /**
  * Return same value
- * 接收任何类型值，并返回原值
+ * 恒等式，接收任何类型值，并返回原值
  */
 export const identity = (_: any) => _
 
