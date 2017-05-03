@@ -93,22 +93,25 @@ export function parseComponent (
    *
    * 如：
      parseComponent(`
-       <template>
-        <div>hi</div>
+       <template lang="jade">
+        h1(class="red") {{msg}}
        </template>
        <style src="./test.css"></style>
        <style lang="stylus" scoped>
          h1
-         color red
+          color red
          h2
-         color green
+          color green
        </style>
+       <style lang="stylus" src="style.styl"></style>
        <style module>
         h1 { font-weight: bold }
        </style>
        <style bool-attr val-attr="test"></style>
-       <script>
-        export default {}
+       <script lang="coffee">
+         module.exports =
+          data: ->
+            msg: 'Hello world!'
        </script>
        <div>
         <style>nested should be ignored</style>

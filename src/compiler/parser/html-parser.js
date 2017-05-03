@@ -139,6 +139,7 @@ export function parseHTML (html, options) {
         }
 
         // End tag:
+        // 匹配结束 tag
         const endTagMatch = html.match(endTag)
         if (endTagMatch) {
           const curIndex = index
@@ -221,8 +222,9 @@ export function parseHTML (html, options) {
     html = html.substring(n)
   }
 
+  // 分析 tag 开始
   function parseStartTag () {
-    const start = html.match(startTagOpen)
+    const start = html.match(startTagOpen) // 匹配开始 tag
     if (start) {
       const match = {
         tagName: start[1],
@@ -289,6 +291,12 @@ export function parseHTML (html, options) {
     }
   }
 
+  /**
+   * 分析 tag 结束
+   * @param tagName tag 名称
+   * @param start tag 的起始
+   * @param end tag 的结束
+   */
   function parseEndTag (tagName, start, end) {
     let pos, lowerCasedTagName
     if (start == null) start = index

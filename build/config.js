@@ -95,6 +95,7 @@ const builds = {
     banner
   },
   // Web compiler (CommonJS).
+  // template compiler for Vue 2.0
   'web-compiler': {
     entry: path.resolve(__dirname, '../src/entries/web-compiler.js'),
     dest: path.resolve(__dirname, '../packages/vue-template-compiler/build.js'),
