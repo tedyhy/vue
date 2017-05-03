@@ -33,6 +33,7 @@ declare type CompiledFunctionResult = {
   staticRenderFns: Array<Function>;
 }
 
+// 声明 ModuleOptions 类型
 declare type ModuleOptions = {
   preTransformNode: (el: ASTElement) => void;
   transformNode: (el: ASTElement) => void; // transform an element's AST node
