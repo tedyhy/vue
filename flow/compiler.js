@@ -161,17 +161,17 @@ declare type SFCDescriptor = {
   customBlocks: Array<SFCCustomBlock>;
 }
 
-// 声明 SFCCustomBlock 类型
+// 声明 SFCCustomBlock 类型（自定义元素块）
 declare type SFCCustomBlock = {
   type: string;
   content: string;
   start?: number;
   end?: number;
   src?: string;
-  attrs: {[attribute:string]: string};
+  attrs: {[attribute:string]: string}; // 如：[{name: 'lang', value: ''}, ...]，规定 key 类型为 string
 }
 
-// 声明 SFCBlock 类型
+// 声明 SFCBlock 类型（元素块）
 declare type SFCBlock = {
   type: string;
   content: string;

@@ -16,9 +16,9 @@ import { isNonPhrasingTag } from 'web/compiler/util'
 
 // Regular Expressions for parsing tags and attributes
 // 分析 tags 和 attributes 的正则表达式
-const singleAttrIdentifier = /([^\s"'<>/=]+)/ // 单个属性标识符
-const singleAttrAssign = /(?:=)/
-const singleAttrValues = [
+const singleAttrIdentifier = /([^\s"'<>/=]+)/ // 匹配属性 key 值
+const singleAttrAssign = /(?:=)/ // 匹配等号，非捕获
+const singleAttrValues = [ // 匹配单双引号
   // attr value double quotes
   // 属性值双引号
   /"([^"]*)"+/.source,
@@ -29,7 +29,7 @@ const singleAttrValues = [
   // 属性值无引号
   /([^\s"'=<>`]+)/.source
 ]
-// 属性正则
+// 匹配属性正则
 const attribute = new RegExp(
   '^\\s*' + singleAttrIdentifier.source +
   '(?:\\s*(' + singleAttrAssign.source + ')' +
@@ -38,14 +38,15 @@ const attribute = new RegExp(
 
 // could use https://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-QName
 // but for Vue templates we can enforce a simple charset
-const ncname = '[a-zA-Z_][\\w\\-\\.]*'
-const qnameCapture = '((?:' + ncname + '\\:)?' + ncname + ')'
-const startTagOpen = new RegExp('^<' + qnameCapture)
-const startTagClose = /^\s*(\/?)>/
-const endTag = new RegExp('^<\\/' + qnameCapture + '[^>]*>')
-const doctype = /^<!DOCTYPE [^>]+>/i // DOCTYPE
-const comment = /^<!--/ // 评论
-const conditionalComment = /^<!\[/ // 条件评论
+// 可以使用命名空间，但是对于 .vue 模板，我们强制使用简单字符命名空间
+const ncname = '[a-zA-Z_][\\w\\-\\.]*' // 匹配属性名称
+const qnameCapture = '((?:' + ncname + '\\:)?' + ncname + ')' // 匹配 Qualified Names，支持命名空间 tag
+const startTagOpen = new RegExp('^<' + qnameCapture) // 匹配 tag 开始
+const startTagClose = /^\s*(\/?)>/ // 匹配 tag 开始右尖括号，可以是一元 tag
+const endTag = new RegExp('^<\\/' + qnameCapture + '[^>]*>') // 匹配 tag 结束标签
+const doctype = /^<!DOCTYPE [^>]+>/i // 匹配 DOCTYPE
+const comment = /^<!--/ // 匹配评论
+const conditionalComment = /^<!\[/ // 匹配 CDATA 或 IE 条件判断，如：<![if !IE]>...<![endif]>
 
 // 火狐浏览器关于正则的一个 bug，参考 https://bugzilla.mozilla.org/show_bug.cgi?id=369778
 // RESOLVED FIXED in mozilla34，所以 mozilla34 之前是存在这个 bug 的。
@@ -56,7 +57,7 @@ let IS_REGEX_CAPTURING_BROKEN = false
 })
 
 // Special Elements (can contain anything)
-// 用于判断是否是 'script,style,textarea' 元素
+// 用于判断是否是 'script,style,textarea' 元素中的一种
 const isPlainTextElement = makeMap('script,style,textarea', true)
 // 正则缓存池
 const reCache = {}
@@ -88,12 +89,17 @@ function decodeAttr (value, shouldDecodeNewlines) {
   return value.replace(re, match => decodingMap[match])
 }
 
+/**
+ * 分析 html
+ * @param html .vue 模板代码
+ * @param options 一些选项，包括：start、end 等
+ */
 export function parseHTML (html, options) {
   const stack = []
   const expectHTML = options.expectHTML
-  const isUnaryTag = options.isUnaryTag || no
+  const isUnaryTag = options.isUnaryTag || no // 是否是一元标签，默认 false
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
-  let index = 0
+  let index = 0 // 字符串的起始位置索引
   let last, lastTag
   while (html) {
     last = html
@@ -103,6 +109,7 @@ export function parseHTML (html, options) {
       let textEnd = html.indexOf('<')
       if (textEnd === 0) {
         // Comment:
+        // 匹配到评论，并从评论后开始继续分析，即忽略评论内容
         if (comment.test(html)) {
           const commentEnd = html.indexOf('-->')
 
@@ -123,6 +130,8 @@ export function parseHTML (html, options) {
         }
 
         // Doctype:
+        // 匹配 DOCTYPE，如：<!DOCTYPE html>
+        // 匹配到后开始继续分析，即忽略 DOCTYPE 内容
         const doctypeMatch = html.match(doctype)
         if (doctypeMatch) {
           advance(doctypeMatch[0].length)
@@ -206,6 +215,7 @@ export function parseHTML (html, options) {
   // Clean up any remaining tags
   parseEndTag()
 
+  // 根据传参 n 截取 html 字符串内容
   function advance (n) {
     index += n
     html = html.substring(n)
