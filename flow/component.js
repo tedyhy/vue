@@ -2,11 +2,12 @@ import type { Config } from '../src/core/config'
 import type VNode from '../src/core/vdom/vnode'
 import type Watcher from '../src/core/observer/watcher'
 
+// 声明组件（Component）接口，如：Vue Class、new Vue() 的实例 vm 都实现遵循了此接口
 declare interface Component {
-  // constructor information
+  // constructor information 构造器信息相关
   static cid: number;
   static options: Object;
-  // extend
+  // extend 继承来的属性或方法
   static extend: (options: Object) => Function;
   static superOptions: Object;
   static extendOptions: Object;
@@ -17,7 +18,7 @@ declare interface Component {
   static component: (id: string, def?: Class<Component> | Object) => Class<Component>;
   static filter: (id: string, def?: Function) => Function | void;
 
-  // public properties
+  // public properties 公共属性
   $el: any; // so that we can attach __vue__ to it
   $data: Object;
   $options: ComponentOptions;
@@ -31,7 +32,7 @@ declare interface Component {
   $isServer: boolean;
   $props: Object;
 
-  // public methods
+  // public methods 公共方法
   $mount: (el?: Element | string, hydrating?: boolean) => Component;
   $forceUpdate: () => void;
   $destroy: () => void;
@@ -45,7 +46,7 @@ declare interface Component {
   $nextTick: (fn: Function) => void;
   $createElement: (tag?: string | Component, data?: Object, children?: VNodeChildren) => VNode;
 
-  // private properties
+  // private properties 私有属性
   _uid: number;
   _name: string; // this only exists in dev mode
   _isVue: true;
@@ -68,12 +69,12 @@ declare interface Component {
   _hasHookEvent: boolean;
   _provided: ?Object;
 
-  // private methods
-  // lifecycle
+  // private methods 私有方法
+  // lifecycle 生命周期相关
   _init: Function;
   _mount: (el?: Element | void, hydrating?: boolean) => Component;
   _update: (vnode: VNode, hydrating?: boolean) => void;
-  // rendering
+  // rendering 渲染 view
   _render: () => VNode;
   __patch__: (a: Element | VNode | void, b: VNode) => any;
   // createElement

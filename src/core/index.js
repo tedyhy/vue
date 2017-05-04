@@ -1,9 +1,11 @@
+// Vue 最核心初始化入口
 import Vue from './instance/index'
 import { initGlobalAPI } from './global-api/index'
 import { isServerRendering } from 'core/util/env'
 
 initGlobalAPI(Vue)
 
+// 通过 Object.defineProperty 定义 Vue.prototype.$isServer 属性，此属性的 getter 之后不能修改
 Object.defineProperty(Vue.prototype, '$isServer', {
   get: isServerRendering
 })

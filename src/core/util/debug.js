@@ -9,6 +9,13 @@ let formatComponentName
 // 如果非生产环境，那么初始化 warn、tip、formatComponentName 函数
 if (process.env.NODE_ENV !== 'production') {
   const hasConsole = typeof console !== 'undefined' // 是否有控制台输出接口
+  /**
+   * 匹配类似这样的组件名称：
+   * myvue => myvue
+   * my-vue => myVue
+   * my_vue => myVue
+   * @type {RegExp}
+   */
   const classifyRE = /(?:^|[-_])(\w)/g
   const classify = str => str
     .replace(classifyRE, c => c.toUpperCase())
@@ -28,7 +35,13 @@ if (process.env.NODE_ENV !== 'production') {
     }
   }
 
+  /**
+   * 输出提示信息
+   * @param msg 提示信息
+   * @param vm Vue vm 实例
+   */
   tip = (msg, vm) => {
+    // 非静默模式下输出 warn 信息
     if (hasConsole && (!config.silent)) {
       console.warn(`[Vue tip]: ${msg} ` + (
         vm ? formatLocation(formatComponentName(vm)) : ''
@@ -74,10 +87,12 @@ if (process.env.NODE_ENV !== 'production') {
 
     const file = vm._isVue && vm.$options.__file
     if (!name && file) {
+      // 根据 .vue 文件获取组件名称
       const match = file.match(/([^/\\]+)\.vue$/)
       name = match && match[1]
     }
 
+    // 如果没有组件 name，则默认为 Anonymous 组件
     return (
       (name ? `<${classify(name)}>` : `<Anonymous>`) +
       (file && includeFile !== false ? ` at ${file}` : '')

@@ -146,7 +146,7 @@ export function bind (fn: Function, ctx: Object): Function {
 
 /**
  * Convert an Array-like object to a real Array.
- * 转换一个类数组对象成真实的数组
+ * 转换一个类数组对象成真实的数组，生成一个新的数组
  * @param start【可选】从第几个开始转换
  */
 export function toArray (list: any, start?: number): Array<any> {
