@@ -21,7 +21,8 @@ export const isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge // 是否是 Chr
 
 // this needs to be lazy-evaled because vue may be required before
 // vue-server-renderer can set VUE_ENV
-// 判断是否是 vue server 端
+// 判断当前环境是否是 server 端，主要通过 process.env.VUE_ENV === 'server' 来判断的
+// VUE_ENV 环境变量是在 vue-server-renderer 包里手动设置的：process.env.VUE_ENV = 'server'
 let _isServer
 export const isServerRendering = () => {
   if (_isServer === undefined) {

@@ -2,6 +2,7 @@
 
 // Vue 核心
 import Vue from 'core/index'
+// Vue 全局配置项
 import config from 'core/config'
 import { patch } from 'web/runtime/patch'
 import { extend, noop } from 'shared/util'

@@ -79,6 +79,7 @@ export class Observer {
 /**
  * Augment an target Object or Array by intercepting
  * the prototype chain using __proto__
+ * 使用 __proto__ 拦截原型链来增强目标对象或数组
  */
 function protoAugment (target, src: Object) {
   /* eslint-disable no-proto */
@@ -89,6 +90,7 @@ function protoAugment (target, src: Object) {
 /**
  * Augment an target Object or Array by defining
  * hidden properties.
+ * 通过定义隐藏属性来增强目标对象或数组。
  */
 /* istanbul ignore next */
 function copyAugment (target: Object, src: Object, keys: Array<string>) {

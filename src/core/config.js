@@ -145,6 +145,7 @@ const config: Config = {
 
   /**
    * Max circular updates allowed in a scheduler flush cycle.
+   * 调度器刷新周期允许的最大循环更新间隔
    */
   _maxUpdateCount: 100
 }
