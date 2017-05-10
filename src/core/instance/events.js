@@ -43,7 +43,7 @@ export function updateComponentListeners (
 
 // 将事件相关方法混合到 Vue Class 原型上，共4个方法：$on、$once、$off、$emit。
 export function eventsMixin (Vue: Class<Component>) {
-  const hookRE = /^hook:/
+  const hookRE = /^hook:/ // 检测 vm 生命周期钩子函数，如：callHook(vm, 'beforeUpdate') => 'hook:beforeUpdate'
   /**
    * 添加事件回调
    * @param event 一个或一组事件名称
@@ -62,6 +62,9 @@ export function eventsMixin (Vue: Class<Component>) {
       (vm._events[event] || (vm._events[event] = [])).push(fn)
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup
+      // 优化 hook:event。通过使用一个在注册时标记的布尔标志替换哈希查找来实现缩减 event 性能开销。
+      // 如果当期注册的事件是 hook:event（钩子事件），则通过 _hasHookEvent 来标记当期 vm 存在钩子事件。
+      // hook:event 应用在 'core/instance/lifecycle'
       if (hookRE.test(event)) {
         vm._hasHookEvent = true
       }
@@ -165,7 +168,7 @@ export function eventsMixin (Vue: Class<Component>) {
     if (cbs) {
       // toArray(cbs) 将原来队列里的回调调换顺序并生成一个新的数组
       cbs = cbs.length > 1 ? toArray(cbs) : cbs
-      // 取除了传参 event 外的参数，并将参数传递给每个要执行的回调
+      // 取（除了传参 event 外）参数，并将参数传递给每个要执行的回调
       const args = toArray(arguments, 1)
       for (let i = 0, l = cbs.length; i < l; i++) {
         cbs[i].apply(vm, args)

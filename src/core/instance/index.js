@@ -16,7 +16,7 @@ function Vue (options) {
   this._init(options)
 }
 
-// 初始化入口，各种初始化工作
+// 初始化入口，各种初始化工作（添加一些属性或方法）
 initMixin(Vue)
 // 数据绑定的核心方法，包括常用的 $watch 方法
 stateMixin(Vue)

@@ -10,16 +10,20 @@ import { initLifecycle, callHook } from './lifecycle'
 import { initProvide, initInjections } from './inject'
 import { extend, mergeOptions, formatComponentName } from '../util/index'
 
+// 记录当前 vm 实例 uid，一个 app 可以有多个 vm
 let uid = 0
 
 export function initMixin (Vue: Class<Component>) {
+  // 为 Vue 添加原型内部使用方法 _init，对 vm 进行初始化
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
     // a uid
+    // uid 递增
     vm._uid = uid++
 
     let startTag, endTag
     /* istanbul ignore if */
+    // 非生产环境下初始化性能数据采集
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       startTag = `vue-perf-init:${vm._uid}`
       endTag = `vue-perf-end:${vm._uid}`
@@ -27,13 +31,14 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     // a flag to avoid this being observed
-    // 一个 flag 避免被观察到，如：ob = new Observer(value)
+    // 一个 flag，避免此 vm 实例对象被观察到，如：ob = new Observer(value)
     vm._isVue = true
     // merge options
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
+      // 优化内部组件实例化，因为动态 merge options 相当缓慢，而且内部组件 options 都不需要特殊处理。
       initInternalComponent(vm, options)
     } else {
       vm.$options = mergeOptions(
@@ -72,6 +77,7 @@ export function initMixin (Vue: Class<Component>) {
   }
 }
 
+// 初始化内部组件
 function initInternalComponent (vm: Component, options: InternalComponentOptions) {
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
@@ -89,6 +95,7 @@ function initInternalComponent (vm: Component, options: InternalComponentOptions
   }
 }
 
+// 处理构造器选项
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
   if (Ctor.super) {
