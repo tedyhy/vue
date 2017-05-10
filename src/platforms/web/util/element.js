@@ -37,12 +37,15 @@ export const isReservedTag = (tag: string): ?boolean => {
   return isHTMLTag(tag) || isSVG(tag)
 }
 
+// 获取 tag 的命名空间
 export function getTagNamespace (tag: string): ?string {
+  // 如果是 svg 节点，则返回 'svg'
   if (isSVG(tag)) {
     return 'svg'
   }
   // basic support for MathML
   // note it doesn't support other MathML elements being component roots
+  // 如果 tag 是 'math'，则返回 'math'
   if (tag === 'math') {
     return 'math'
   }

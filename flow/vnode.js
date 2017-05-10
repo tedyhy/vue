@@ -30,6 +30,7 @@ declare type VNodeWithData = {
   isRootInsert: boolean;
 }
 
+// 声明接口 VNodeData
 declare interface VNodeData {
   key?: string | number;
   slot?: string;
