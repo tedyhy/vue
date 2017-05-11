@@ -16,6 +16,7 @@ declare type MountedComponentVNode = {
 }
 
 // interface for vnodes in update modules
+// 声明 VNodeWithData 类型，即：VNode 包含 data
 declare type VNodeWithData = {
   tag: string;
   data: VNodeData;
@@ -30,7 +31,7 @@ declare type VNodeWithData = {
   isRootInsert: boolean;
 }
 
-// 声明接口 VNodeData
+// 声明接口 VNodeData，即：VNode.data 类型
 declare interface VNodeData {
   key?: string | number;
   slot?: string;
