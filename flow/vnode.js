@@ -54,7 +54,7 @@ declare interface VNodeData {
     render: Function;
     staticRenderFns: Array<Function>;
   };
-  directives?: Array<VNodeDirective>;
+  directives?: Array<VNodeDirective>; // 当前 vnode 上的指令集
   keepAlive?: boolean;
   scopedSlots?: { [key: string]: Function };
   model?: {
@@ -63,12 +63,13 @@ declare interface VNodeData {
   };
 }
 
+// 声明 VNodeDirective 类型，规范指令节点
 declare type VNodeDirective = {
   name: string;
   rawName: string;
   value?: any;
   oldValue?: any;
   arg?: string;
-  modifiers?: ASTModifiers;
-  def?: Object;
+  modifiers?: ASTModifiers; // 对指令的修饰符，如：<form v-on:submit.prevent="onSubmit"></form>
+  def?: Object; // 当前指令的钩子
 }

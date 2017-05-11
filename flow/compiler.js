@@ -43,6 +43,7 @@ declare type ModuleOptions = {
   staticKeys?: Array<string>; // AST properties to be considered static
 }
 
+// 声明 ASTModifiers 类型，规范指令修饰符
 declare type ASTModifiers = { [key: string]: boolean }
 declare type ASTIfConditions = Array<{ exp: ?string; block: ASTElement }>
 

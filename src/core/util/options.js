@@ -244,10 +244,12 @@ function normalizeProps (options: Object) {
 
 /**
  * Normalize raw function directives into object format.
+ * 将原始函数指令规范化为对象格式。
  */
 function normalizeDirectives (options: Object) {
   const dirs = options.directives
   if (dirs) {
+    // 如果存在指令集，则遍历之。如果当前指令是函数，则将其转换为对象格式。
     for (const key in dirs) {
       const def = dirs[key]
       if (typeof def === 'function') {
