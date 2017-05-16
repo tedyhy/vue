@@ -87,13 +87,14 @@ const config: Config = {
    * Check if a tag is reserved so that it cannot be registered as a
    * component. This is platform-dependent and may be overwritten.
    * 检查标签是否被保留，使其不能被注册为组件。这与平台有关，可以被覆盖。
+   * 默认总返回 false，可以自定义覆盖。
    */
   isReservedTag: no,
 
   /**
    * Check if a tag is an unknown element.
    * Platform-dependent.
-   * 检查标签是否是未知元素
+   * 检查标签是否是未知元素，默认总返回 false，可以自定义覆盖。
    */
   isUnknownElement: no,
 
@@ -118,7 +119,7 @@ const config: Config = {
 
   /**
    * List of asset types that a component can own.
-   * 一个组件拥有的类型列表
+   * 一个组件拥有的类型列表，内部使用，不要覆盖
    */
   _assetTypes: [
     'component',
@@ -128,7 +129,7 @@ const config: Config = {
 
   /**
    * List of lifecycle hooks.
-   * 生命周期钩子函数列表
+   * 生命周期钩子函数列表，内部使用，不要覆盖
    */
   _lifecycleHooks: [
     'beforeCreate',
@@ -145,7 +146,7 @@ const config: Config = {
 
   /**
    * Max circular updates allowed in a scheduler flush cycle.
-   * 调度器刷新周期允许的最大循环更新间隔
+   * 调度器刷新周期允许的最大循环更新间隔，内部使用，不要覆盖
    */
   _maxUpdateCount: 100
 }

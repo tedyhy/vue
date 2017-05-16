@@ -45,7 +45,7 @@ declare interface VNodeData {
   props?: { [key: string]: any };
   attrs?: { [key: string]: string };
   domProps?: { [key: string]: any };
-  hook?: { [key: string]: Function };
+  hook?: { [key: string]: Function }; // 当前节点所有钩子（Object）
   on?: ?{ [key: string]: Function | Array<Function> };
   nativeOn?: { [key: string]: Function | Array<Function> };
   transition?: Object;

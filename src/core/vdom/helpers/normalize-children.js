@@ -15,7 +15,20 @@ import VNode, { createTextVNode } from 'core/vdom/vnode'
 // normalization is needed - if any child is an Array, we flatten the whole
 // thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
 // because functional components already normalize their own children.
+/**
+ * 模板编译器尝试通过在编译时静态分析模板来最小化对归一化的需求。
+ * 对于纯HTML标记，归一化可以完全跳过，因为生成的渲染函数保证返回 Array <VNode>。 有两种情况需要额外的标准化：
+ * 1.当 children 包含组件时 - 因为一个功能组件可能返回一个 Array 而不是单个 root。
+ * 在这种情况下，只需要一个简单的规范化 - 如果任何一个 child 是一个 Array，我们用 Array.prototype.concat 进行处理，
+ * 保证只有一级深度，因为功能组件已经使自己的 children 规范化。
+ *
+ * 简单规范化子节点
+ * @param children
+ * @returns {*}
+ */
 export function simpleNormalizeChildren (children: any) {
+  // 遍历子节点，如果当前子节点是数组，则提取数组里所有的子节点到上一层，如：
+  // [[1, 2], 3, 4] => [1, 2, 3, 4]
   for (let i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
       return Array.prototype.concat.apply([], children)
@@ -28,7 +41,14 @@ export function simpleNormalizeChildren (children: any) {
 // e.g. <template>, <slot>, v-for, or when the children is provided by user
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
+/**
+ * 规范化子节点
+ * @param children
+ * @returns {*[]}
+ */
 export function normalizeChildren (children: any): ?Array<VNode> {
+  // 如果子节点是原始类型数据，则创建文本节点 vnode 并返回
+  // 如果子节点是数组，则规范化数组子节点并返回，否则返回 undefined
   return isPrimitive(children)
     ? [createTextVNode(children)]
     : Array.isArray(children)
@@ -36,15 +56,24 @@ export function normalizeChildren (children: any): ?Array<VNode> {
       : undefined
 }
 
+/**
+ * 规范化数组子节点
+ * @param children
+ * @param nestedIndex
+ * @returns {Array}
+ */
 function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNode> {
   const res = []
   let i, c, last
+  // 遍历子节点
   for (i = 0; i < children.length; i++) {
-    c = children[i]
+    c = children[i] // 当前子节点
+    // 如果当前子节点为空或者为布尔值，则跳过
     if (c == null || typeof c === 'boolean') continue
     last = res[res.length - 1]
-    //  nested
+    // nested
     if (Array.isArray(c)) {
+      // 如果当前子节点是数组，则递归
       res.push.apply(res, normalizeArrayChildren(c, `${nestedIndex || ''}_${i}`))
     } else if (isPrimitive(c)) {
       if (last && last.text) {

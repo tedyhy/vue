@@ -79,7 +79,14 @@ export const nextTick = (function () {
   // UIWebView in iOS >= 9.3.3 when triggered in touch event handlers. It
   // completely stops working after triggering a few times... so, if native
   // Promise is available, we will use it:
-  // nextTick 的微任务队列，可以通过 native Promise.then 或 MutationObserver 实现。
+  // 参考 https://vuejs.org/v2/api/#Vue-nextTick
+  // 一个打包执行延迟任务的方法，采用 Promise => MutationObserver => setTimeout(0) 的降级设计。
+  // 1. 在使用 Promise 的时候，ios 里（其实就是 safari 和 uiwebview）如果直接用 Promise.resolve() 触发一个 then 的话，
+  // 它不会立即执行，然而运行一个空的 setTimeout 之后，就没问题了。
+  // 2. MutationObserver 是通过观测 dom 元素的变化来触发事件回调。
+  // 3. 还有一个细节，在执行一批回调的时候，用的是 [].length = 0 来清空数组，而不是空数组赋值的方法，感觉是为了省内存，不用频繁 gc。
+  //
+  // nextTick 的延迟任务队列，可以通过 native Promise.then 或 MutationObserver 实现。
   // MutationObserver 具有更广泛的支持，但是当触摸事件句柄触发时，iOS> = 9.3.3 中的 UIWebView 会有严重 bug（触发几次后，它完全停止工作）
   // 因此，如果 native Promise 可用，那么我们优先使用它。
   /* istanbul ignore if */
@@ -94,7 +101,7 @@ export const nextTick = (function () {
       // needs to do some other work, e.g. handle a timer. Therefore we can
       // "force" the microtask queue to be flushed by adding an empty timer.
       // 在有问题的 UIWebViews 中，Promise.then 不会完全中断，
-      // 但是它可能会陷入一个奇怪的状态，即：回调被推入微任务队列，但队列没有被刷新，直到浏览器需要做一些其他工作，
+      // 但是它可能会陷入一个奇怪的状态，即：回调被推入延迟任务队列，但队列没有被刷新，直到浏览器需要做一些其他工作，
       // 例如：处理一个计时器。因此，我们可以通过添加一个空的定时器来“强制”微任务队列被刷新。
       if (isIOS) setTimeout(noop)
     }
