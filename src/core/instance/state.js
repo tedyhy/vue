@@ -47,17 +47,28 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+/**
+ * 初始化 vm 实例的 state
+ * @param vm
+ */
 export function initState (vm: Component) {
+  // 设置 watchers 关联
   vm._watchers = []
+  // 获取 vm 实例选项
   const opts = vm.$options
+  // 如果有 props，则初始化 props
   if (opts.props) initProps(vm, opts.props)
+  // 如果有 methods，则初始化 methods
   if (opts.methods) initMethods(vm, opts.methods)
+  // 如果有 data，则初始化 data
   if (opts.data) {
     initData(vm)
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  // 如果有 computed，则初始化 computed
   if (opts.computed) initComputed(vm, opts.computed)
+  // 如果有 watch，则初始化 watch
   if (opts.watch) initWatch(vm, opts.watch)
 }
 
@@ -313,12 +324,37 @@ function initMethods (vm: Component, methods: Object) {
 
 /**
  * 初始化 watch
+ * 一个更通用的方法通过 watch 选项，来响应数据的变化。
+ * 当你想要在数据变化响应时，执行异步操作或开销较大的操作，这是很有用的。
+ * 参考 https://vuejs.org/v2/api/#watch
+ * 如：
+  var vm = new Vue({
+    data: {
+      a: 1,
+      b: 2,
+      c: 3
+    },
+    watch: {
+      a: function (val, oldVal) {
+        console.log('new: %s, old: %s', val, oldVal)
+      },
+      // 方法名
+      b: 'someMethod',
+      // 深度 watcher
+      c: {
+        handler: function (val, oldVal) { ... },
+        deep: true
+      }
+    }
+  })
  * @param vm
  * @param watch
  */
 function initWatch (vm: Component, watch: Object) {
+  // 遍历 watch 对象
   for (const key in watch) {
     const handler = watch[key]
+    // 如果当前 watch 是一个数组，则遍历之，分别创建 watcher。否则直接创建 watcher。
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
         createWatcher(vm, key, handler[i])
@@ -337,13 +373,21 @@ function initWatch (vm: Component, watch: Object) {
  */
 function createWatcher (vm: Component, key: string, handler: any) {
   let options
+  // 如果当前 watch 是普通对象，则 watch 为 handler.handler
   if (isPlainObject(handler)) {
     options = handler
     handler = handler.handler
   }
+  // 如果当前 watch 是字符串，则 watch 为实例方法 vm[handler]
   if (typeof handler === 'string') {
     handler = vm[handler]
   }
+  /**
+   * vm.$watch
+   * 观察 Vue 实例变化的一个表达式或计算属性函数。
+   * 回调函数得到的参数为新值和旧值。
+   * 参考 https://vuejs.org/v2/api/#vm-watch
+   */
   vm.$watch(key, handler, options)
 }
 
