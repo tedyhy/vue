@@ -86,16 +86,20 @@ export function initExtend (Vue: GlobalAPI) {
   }
 }
 
+// 初始化组件原型对象属性 _props
 function initProps (Comp) {
   const props = Comp.options.props
   for (const key in props) {
+    // 遍历为 Comp.prototype._props 设置属性 key
     proxy(Comp.prototype, `_props`, key)
   }
 }
 
+// 初始化组件计算属性 computed
 function initComputed (Comp) {
   const computed = Comp.options.computed
   for (const key in computed) {
+    // 遍历为 Comp.prototype[key] 设置值
     defineComputed(Comp.prototype, key, computed[key])
   }
 }
