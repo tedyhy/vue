@@ -3,12 +3,13 @@ import { warn } from './debug'
 import { inBrowser } from './env'
 
 // 错误处理
+// 非生产环境下有 2 次不同的警告信息
 export function handleError (err, vm, info) {
   if (config.errorHandler) {
     // 如果指定了组件渲染和观察期间捕获错误的处理函数，那么执行此函数。
     config.errorHandler.call(null, err, vm, info)
   } else {
-    // 如果没有指定 errorHandler，且非生产环境下，则抛出错误警告信息
+    // 如果没有指定 errorHandler，且非生产环境下，则通过 warn 抛出错误警告信息
     if (process.env.NODE_ENV !== 'production') {
       warn(`Error in ${info}:`, vm)
     }

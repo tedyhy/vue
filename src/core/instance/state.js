@@ -72,10 +72,19 @@ export function initState (vm: Component) {
   if (opts.watch) initWatch(vm, opts.watch)
 }
 
+// 保留属性
 const isReservedProp = { key: 1, ref: 1, slot: 1 }
 
 /**
  * 初始化属性
+ * 如：
+  Vue.component('child', {
+    // 声明 props
+    props: ['message'],
+    // 就像 data 一样，prop 可以用在模板内
+    // 同样也可以在 vm 实例中像 “this.message” 这样使用
+    template: '<span>{{ message }}</span>'
+  })
  * @param vm
  * @param propsOptions
  */
@@ -84,6 +93,7 @@ function initProps (vm: Component, propsOptions: Object) {
   const props = vm._props = {}
   // cache prop keys so that future props updates can iterate using Array
   // instead of dynamic object key enumeration.
+  // 缓存属性 key
   const keys = vm.$options._propKeys = []
   const isRoot = !vm.$parent
   // root instance props should be converted
@@ -125,14 +135,22 @@ function initProps (vm: Component, propsOptions: Object) {
 
 /**
  * 初始化数据
+ * 参考 https://vuejs.org/v2/api/#Options-Data
+ * 如：
+  var vm = new Vue({
+    data: { a: 1 }
+  })
  * @param vm
  */
 function initData (vm: Component) {
+  // 获取 data 数据信息
   let data = vm.$options.data
+  // 如果 data 是函数则执行之，否则取 data
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}
   if (!isPlainObject(data)) {
+    // 如果最终 data 数据不是普通对象，则非生产环境下发出警告，并赋予 data 为空对象
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
       'data functions should return an object:\n' +
@@ -145,13 +163,18 @@ function initData (vm: Component) {
   const props = vm.$options.props
   let i = keys.length
   while (i--) {
+    // 遍历 data 字段，验证当前字段是否已经存在于 props 里
     if (props && hasOwn(props, keys[i])) {
+      // 如果存在于 props 里，则非生产环境下发出警告
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${keys[i]}" is already declared as a prop. ` +
         `Use prop default value instead.`,
         vm
       )
     } else if (!isReserved(keys[i])) {
+      // 如果 key 不是以 $ 或 _ 开头，则使用 Vue 实例代理设置 data。
+      // 以 _ 或 $ 开头的属性不会被 Vue 实例代理，因为它们可能和 Vue 内置的属性、API 方法冲突。
+      // 可以使用例如 vm.$data._property 的方式访问这些属性。
       proxy(vm, `_data`, keys[i])
     }
   }
@@ -159,7 +182,10 @@ function initData (vm: Component) {
   observe(data, true /* asRootData */)
 }
 
+// 如果 data 是函数，则通过 getData 调用执行获取 data 数据
+// data 函数的作用域为 vm
 function getData (data: Function, vm: Component): any {
+  // data 函数执行过程中有异常则抛出异常
   try {
     return data.call(vm)
   } catch (e) {
