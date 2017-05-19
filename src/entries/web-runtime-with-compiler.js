@@ -18,6 +18,7 @@ const idToTemplate = cached(id => {
 /**
  * 如果 vm 在实例化时没有设置 el 选项，则它处于“未挂载”状态，没有关联的 DOM 元素。
  * 后续可以使用 vm.$mount() 手动挂载一个未挂载的实例。
+ * 模板有三种引用写法：el, template, render(JSX)。其中的优先级是 render > template > el。
  * 参考
  * https://vuejs.org/v2/api/#vm-mount
  * https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram
