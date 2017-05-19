@@ -2,6 +2,7 @@
 
 import { isObject } from 'shared/util'
 
+// 从 VNode 节点中获取 class
 export function genClassForVnode (vnode: VNode): string {
   let data = vnode.data
   let parentNode = vnode
@@ -32,6 +33,7 @@ function mergeClassData (child: VNodeData, parent: VNodeData): {
   }
 }
 
+// 结合 staticClass 和 dynamicClass
 function genClassFromData (data: Object): string {
   const dynamicClass = data.class
   const staticClass = data.staticClass
@@ -42,18 +44,22 @@ function genClassFromData (data: Object): string {
   return ''
 }
 
+// 连接两个字符串
 export function concat (a: ?string, b: ?string): string {
   return a ? b ? (a + ' ' + b) : a : (b || '')
 }
 
+// 将 class 转换成字符串形式
 export function stringifyClass (value: any): string {
   let res = ''
   if (!value) {
     return res
   }
+  // 如果是字符串，直接返回
   if (typeof value === 'string') {
     return value
   }
+  // 如果是数组，迭代遍历之
   if (Array.isArray(value)) {
     let stringified
     for (let i = 0, l = value.length; i < l; i++) {
@@ -63,8 +69,10 @@ export function stringifyClass (value: any): string {
         }
       }
     }
+    // 清除最后一个空格
     return res.slice(0, -1)
   }
+  // 如果是对象，枚举属性，清除最后一个空格
   if (isObject(value)) {
     for (const key in value) {
       if (value[key]) res += key + ' '
