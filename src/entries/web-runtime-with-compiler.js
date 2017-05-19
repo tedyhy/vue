@@ -23,7 +23,7 @@ const idToTemplate = cached(id => {
  * https://vuejs.org/v2/api/#vm-mount
  * https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram
  */
-const mount = Vue.prototype.$mount
+const mount = Vue.prototype.$mount // 保留之前的方法为 mount，然后重新定义 Vue.prototype.$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
@@ -98,6 +98,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  // 执行之前的 mount 方法
   return mount.call(this, el, hydrating)
 }
 

@@ -40,7 +40,8 @@ export const isServerRendering = () => {
 }
 
 // detect devtools
-// 检测是否有 devtools
+// 检测浏览器是否安装了 Vue devtools 开发工具插件，如果安装了插件而且启用此插件，
+// 那么全局 window.__VUE_DEVTOOLS_GLOBAL_HOOK__ 就会存在
 export const devtools = inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
 /* istanbul ignore next */
