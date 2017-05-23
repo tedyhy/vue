@@ -95,7 +95,11 @@ function initInternalComponent (vm: Component, options: InternalComponentOptions
   }
 }
 
-// 处理构造器选项
+/**
+ * 处理构造器选项
+ * @param Ctor 实例 vm 构造器
+ * @returns {*}
+ */
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
   if (Ctor.super) {
@@ -133,6 +137,7 @@ function resolveModifiedOptions (Ctor: Class<Component>): ?Object {
   return modified
 }
 
+// 重复数据删除
 function dedupe (latest, sealed) {
   // compare latest and sealed to ensure lifecycle hooks won't be duplicated
   // between merges

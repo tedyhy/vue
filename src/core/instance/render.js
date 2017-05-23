@@ -26,6 +26,7 @@ import { bindObjectProps } from './render-helpers/bind-object-props'
 import { renderStatic, markOnce } from './render-helpers/render-static'
 import { resolveSlots, resolveScopedSlots } from './render-helpers/resolve-slots'
 
+// 初始化 render
 export function initRender (vm: Component) {
   vm.$vnode = null // the placeholder node in parent tree
   vm._vnode = null // the root of the child tree
@@ -108,6 +109,7 @@ export function renderMixin (Vue: Class<Component>) {
   // internal render helpers.
   // these are exposed on the instance prototype to reduce generated render
   // code size.
+  // 内部 render 助手，这些都暴露在实例 vm 原型上以减少生成的 render 代码大小
   Vue.prototype._o = markOnce
   Vue.prototype._n = toNumber
   Vue.prototype._s = _toString

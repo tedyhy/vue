@@ -22,7 +22,7 @@ import {
   isPlainObject
 } from '../util/index'
 
-// 通用属性定义项
+// 通用属性定义描述符
 const sharedPropertyDefinition = {
   enumerable: true,
   configurable: true,
@@ -72,7 +72,7 @@ export function initState (vm: Component) {
   if (opts.watch) initWatch(vm, opts.watch)
 }
 
-// 保留属性
+// 保留的属性集合
 const isReservedProp = { key: 1, ref: 1, slot: 1 }
 
 /**
