@@ -30,8 +30,8 @@ export const arrayMethods = Object.create(arrayProto)
   def(arrayMethods, method, function mutator () {
     // avoid leaking arguments:
     // http://jsperf.com/closure-with-arguments
-    // 避免内存泄漏
-    // 避免引用，重新定义数组用来存储参数
+    // 避免 arguments 内存泄漏
+    // 避免引用，重新定义数组用来 copy 存储每个参数，这种方式效率更高
     let i = arguments.length
     const args = new Array(i)
     while (i--) {
