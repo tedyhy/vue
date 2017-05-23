@@ -50,6 +50,7 @@ export function renderMixin (Vue: Class<Component>) {
     return nextTick(fn, this)
   }
 
+  // 注册 Vue 原型内部方法 _render，通过实例 vm 的选项 render、staticRenderFns 来生成虚拟节点 vnode
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
     const {

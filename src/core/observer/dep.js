@@ -19,10 +19,12 @@ export default class Dep {
     this.subs = []
   }
 
+  // 添加子 watcher
   addSub (sub: Watcher) {
     this.subs.push(sub)
   }
 
+  // 移除子 watcher
   removeSub (sub: Watcher) {
     remove(this.subs, sub)
   }
@@ -35,7 +37,9 @@ export default class Dep {
 
   notify () {
     // stabilize the subscriber list first
+    // 拷贝一份 subs
     const subs = this.subs.slice()
+    // 遍历执行 sub 更新
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
     }
@@ -48,11 +52,13 @@ export default class Dep {
 Dep.target = null
 const targetStack = []
 
+// 替换新的 Dep.target，老的 target 入栈 targetStack
 export function pushTarget (_target: Watcher) {
   if (Dep.target) targetStack.push(Dep.target)
   Dep.target = _target
 }
 
+// 将 targetStack 栈顶的 target 替换老的 Dep.target
 export function popTarget () {
   Dep.target = targetStack.pop()
 }

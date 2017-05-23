@@ -134,16 +134,26 @@ export function lifecycleMixin (Vue: Class<Component>) {
   }
 }
 
+/**
+ * 挂载组件
+ * @param vm 实例 vm
+ * @param el el
+ * @param hydrating 与服务器渲染(SSR)相关的
+ * @returns {Component}
+ */
 export function mountComponent (
   vm: Component,
   el: ?Element,
   hydrating?: boolean
 ): Component {
   vm.$el = el
+  // 如果 vm.$options.render 不存在，说明没有设置模板，没有编译生成的 render 和 staticRenderFns
   if (!vm.$options.render) {
+    // 如果没有指定模板，则生成空的 VNode
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
+      // 非生产环境下，指定了 vm.$options.template，但是不是 '#id' 形式，或者已经指定了 vm.$options.el 或者 el，则发出警告
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
         vm.$options.el || el) {
         warn(
@@ -153,6 +163,7 @@ export function mountComponent (
           vm
         )
       } else {
+        // 非生产环境下，未指定 vm.$options.template 或 vm.$options.render，则发出警告
         warn(
           'Failed to mount component: template or render function not defined.',
           vm
@@ -160,11 +171,13 @@ export function mountComponent (
       }
     }
   }
+  // 执行生命周期回调 beforeMount
   callHook(vm, 'beforeMount')
 
   let updateComponent
   /* istanbul ignore if */
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+    // 非生产环境下，对组件更新操作进行性能打点分析
     updateComponent = () => {
       const name = vm._name
       const id = vm._uid
@@ -172,16 +185,19 @@ export function mountComponent (
       const endTag = `vue-perf-end:${id}`
 
       mark(startTag)
+      // 通过 vm._render 生成虚拟 dom 节点 vnode
       const vnode = vm._render()
       mark(endTag)
       measure(`${name} render`, startTag, endTag)
 
       mark(startTag)
+      // 使用生成的 vnode 更新组件
       vm._update(vnode, hydrating)
       mark(endTag)
       measure(`${name} patch`, startTag, endTag)
     }
   } else {
+    // 生产环境下，直接更新组件，不进行性能分析
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }
@@ -193,6 +209,7 @@ export function mountComponent (
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
+    // 成功挂载组件，执行生命周期回调 mounted
     vm._isMounted = true
     callHook(vm, 'mounted')
   }
