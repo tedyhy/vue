@@ -12,6 +12,7 @@ import {
   isServerRendering
 } from '../util/index'
 
+// 获取对象 arrayMethods 属性名称成数组
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 
 /**
@@ -90,7 +91,7 @@ function protoAugment (target, src: Object) {
 /**
  * Augment an target Object or Array by defining
  * hidden properties.
- * 通过定义隐藏属性来增强目标对象或数组。
+ * 通过 Object.defineProperty 为对象 target 定义属性 key = keys[i]，值为 src[key]
  */
 /* istanbul ignore next */
 function copyAugment (target: Object, src: Object, keys: Array<string>) {
@@ -189,25 +190,31 @@ export function defineReactive (
  * Set a property on an object. Adds the new property and
  * triggers change notification if the property doesn't
  * already exist.
+ * 设置对象属性或数组索引值
  */
 export function set (target: Array<any> | Object, key: any, val: any): any {
+  // 如果 target 是数组，而且 key 是数值，则替换数组 target key 索引处的值为 val
   if (Array.isArray(target) && typeof key === 'number') {
     target.length = Math.max(target.length, key)
     target.splice(key, 1, val)
     return val
   }
+  // 如果对象 target 已经存在 key 属性，则直接替换
   if (hasOwn(target, key)) {
     target[key] = val
     return val
   }
   const ob = (target : any).__ob__
+  // 如果对象是实例 vm
   if (target._isVue || (ob && ob.vmCount)) {
+    // 非生产环境下发出警告
     process.env.NODE_ENV !== 'production' && warn(
       'Avoid adding reactive properties to a Vue instance or its root $data ' +
       'at runtime - declare it upfront in the data option.'
     )
     return val
   }
+  // 如果没有 __ob__ 属性，则直接赋值
   if (!ob) {
     target[key] = val
     return val
@@ -219,24 +226,31 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
 
 /**
  * Delete a property and trigger change if necessary.
+ * 删除对象属性或数组索引值
  */
 export function del (target: Array<any> | Object, key: any) {
+  // 如果 target 是数组，而且 key 是数值，则删除数组 target key 索引处的值为
   if (Array.isArray(target) && typeof key === 'number') {
     target.splice(key, 1)
     return
   }
   const ob = (target : any).__ob__
+  // 如果对象是实例 vm
   if (target._isVue || (ob && ob.vmCount)) {
+    // 非生产环境下发出警告
     process.env.NODE_ENV !== 'production' && warn(
       'Avoid deleting properties on a Vue instance or its root $data ' +
       '- just set it to null.'
     )
     return
   }
+  // 如果对象 target 没有 key 属性，则直接返回
   if (!hasOwn(target, key)) {
     return
   }
+  // 删除对象 target 属性 key
   delete target[key]
+  // 如果没有 __ob__ 属性，则直接返回
   if (!ob) {
     return
   }
@@ -248,6 +262,7 @@ export function del (target: Array<any> | Object, key: any) {
  * we cannot intercept array element access like property getters.
  */
 function dependArray (value: Array<any>) {
+  // 遍历数组 value
   for (let e, i = 0, l = value.length; i < l; i++) {
     e = value[i]
     e && e.__ob__ && e.__ob__.dep.depend()
