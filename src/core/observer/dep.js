@@ -13,8 +13,8 @@ let uid = 0
  * 当数据变化时，会被 Observer 观察到，然后由 Dep 通知到 Watcher。
  */
 export default class Dep {
-  static target: ?Watcher;
-  id: number;
+  static target: ?Watcher; // Dep 类的静态属性 target
+  id: number; // 当前 Dep 实例的唯一标识
   subs: Array<Watcher>; // Watcher 为订阅者
 
   constructor () {
@@ -34,11 +34,12 @@ export default class Dep {
 
   depend () {
     if (Dep.target) {
+      // 为当前 Watcher 添加依赖对象
       Dep.target.addDep(this)
     }
   }
 
-  // 通知
+  // 通知到每个 sub 订阅
   notify () {
     // stabilize the subscriber list first
     // 拷贝一份 subs 订阅集合，避免引用
@@ -53,6 +54,7 @@ export default class Dep {
 // the current target watcher being evaluated.
 // this is globally unique because there could be only one
 // watcher being evaluated at any time.
+// 当前正在使用的 Watcher，同一时刻只能有一个 Watcher 在使用。
 Dep.target = null
 const targetStack = []
 
