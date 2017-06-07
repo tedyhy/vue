@@ -12,7 +12,7 @@ export const arrayMethods = Object.create(arrayProto)
 
 /**
  * Intercept mutating methods and emit events
- * 拦截方法并触发相关事件
+ * 拦截数组原型方法，主要用于在数组长度发生变化时触发相关监听事件
  */
 ;[
   'push',
@@ -31,7 +31,7 @@ export const arrayMethods = Object.create(arrayProto)
     // avoid leaking arguments:
     // http://jsperf.com/closure-with-arguments
     // 避免 arguments 内存泄漏
-    // 避免引用，重新定义数组用来 copy 存储每个参数，这种方式效率更高
+    // 避免 arguments 引用，重新定义数组用来 copy 存储每个参数，这种方式效率更高
     let i = arguments.length
     const args = new Array(i)
     while (i--) {
@@ -53,8 +53,11 @@ export const arrayMethods = Object.create(arrayProto)
         inserted = args.slice(2)
         break
     }
+    // 如果是 push|unshift|splice 方法，说明数组长度发生改变，
+    // 为新添加的数组元素 inserted 添加 observer 观察
     if (inserted) ob.observeArray(inserted)
     // notify change
+    // 通知相关监听器
     ob.dep.notify()
     return result
   })

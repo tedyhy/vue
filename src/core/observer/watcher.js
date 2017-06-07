@@ -46,9 +46,11 @@ export default class Watcher {
     cb: Function,
     options?: Object
   ) {
+    // 当前 watcher 隶属于哪个 Vue 实例
     this.vm = vm
     vm._watchers.push(this)
     // options
+    // 设置选项 deep|user|lazy|sync，默认都为 false
     if (options) {
       this.deep = !!options.deep
       this.user = !!options.user
@@ -222,9 +224,11 @@ export default class Watcher {
       // remove self from vm's watcher list
       // this is a somewhat expensive operation so we skip it
       // if the vm is being destroyed.
+      // 如果实例 vm 还未被销毁，则从实例 vm._watchers 里将自己（当前 watcher）移除
       if (!this.vm._isBeingDestroyed) {
         remove(this.vm._watchers, this)
       }
+      // 遍历移除
       let i = this.deps.length
       while (i--) {
         this.deps[i].removeSub(this)
@@ -238,8 +242,12 @@ export default class Watcher {
  * Recursively traverse an object to evoke all converted
  * getters, so that every nested property inside the object
  * is collected as a "deep" dependency.
+ * 递归遍历一个对象以唤起所有转换过的 getter，
+ * 使得对象内每个嵌套的属性作为一个 "deep" 依赖被收集
  */
+// 临时存储 depId 的 Set 容器
 const seenObjects = new Set()
+// val 内每个对象属性都
 function traverse (val: any) {
   seenObjects.clear()
   _traverse(val, seenObjects)
@@ -248,20 +256,25 @@ function traverse (val: any) {
 function _traverse (val: any, seen: Set) {
   let i, keys
   const isA = Array.isArray(val)
+  // 如果 val 不是数组也不是对象，或者是不可添加属性的对象，则直接返回
   if ((!isA && !isObject(val)) || !Object.isExtensible(val)) {
     return
   }
+  // val 是对象而且有 observer 对象属性
   if (val.__ob__) {
     const depId = val.__ob__.dep.id
+    // 判断 seen 里是否存在 depId，不存在则添加
     if (seen.has(depId)) {
       return
     }
     seen.add(depId)
   }
+  // 如果 val 是数组，则递归调用 _traverse 遍历数组 val 的每个值
   if (isA) {
     i = val.length
     while (i--) _traverse(val[i], seen)
   } else {
+    // 如果 val 是对象，则递归调用 _traverse 遍历其每个可枚举属性
     keys = Object.keys(val)
     i = keys.length
     while (i--) _traverse(val[keys[i]], seen)
