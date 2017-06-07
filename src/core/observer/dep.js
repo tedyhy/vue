@@ -8,23 +8,26 @@ let uid = 0
 /**
  * A dep is an observable that can have multiple
  * directives subscribing to it.
+ * 【理解】订阅通知器。Observer 与 Watcher 的纽带。
+ * Watcher 通过 Dep 订阅 Observer 观察。
+ * 当数据变化时，会被 Observer 观察到，然后由 Dep 通知到 Watcher。
  */
 export default class Dep {
   static target: ?Watcher;
   id: number;
-  subs: Array<Watcher>;
+  subs: Array<Watcher>; // Watcher 为订阅者
 
   constructor () {
     this.id = uid++
     this.subs = []
   }
 
-  // 添加子 watcher
+  // 添加子订阅 sub 到 subs 订阅集合中
   addSub (sub: Watcher) {
     this.subs.push(sub)
   }
 
-  // 移除子 watcher
+  // 从 subs 订阅集合中移除子订阅 sub
   removeSub (sub: Watcher) {
     remove(this.subs, sub)
   }
@@ -35,11 +38,12 @@ export default class Dep {
     }
   }
 
+  // 通知
   notify () {
     // stabilize the subscriber list first
-    // 拷贝一份 subs
+    // 拷贝一份 subs 订阅集合，避免引用
     const subs = this.subs.slice()
-    // 遍历执行 sub 更新
+    // 遍历执行所有子订阅 sub 更新
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
     }

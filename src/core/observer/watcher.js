@@ -18,7 +18,7 @@ let uid = 0
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
- *
+ * 【理解】数据的订阅者，数据的变化会通知到 Watcher ，然后由 Watcher 进行相应的操作，例如更新视图。
  * watcher（观察者）解析一个表达式，收集依赖关系，并在表达式值更改时触发回调。
  * 主要用于 $watch() 接口和指令。
  */
