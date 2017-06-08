@@ -12,7 +12,9 @@ export const arrayMethods = Object.create(arrayProto)
 
 /**
  * Intercept mutating methods and emit events
- * 拦截数组原型方法，主要用于在数组长度发生变化时触发相关监听事件
+ * 拦截数组原型方法，调用方法时：
+ * 1）向数组添加元素时会为新元素添加相关监听，相关方法为：push|unshift|splice
+ * 2）执行完方法时通知相关监听器做处理
  */
 ;[
   'push',
