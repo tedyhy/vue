@@ -113,7 +113,7 @@ function getOuterHTML (el: Element): string {
   if (el.outerHTML) {
     return el.outerHTML
   } else {
-    // 如果不支持 outerHTML，则创建父节点 div，向其添加子节点 el 的克隆，然后取 div.innerHTML
+    // 如果不支持 outerHTML，则创建父容器节点 div，向其添加子节点 el 的克隆，然后取 div.innerHTML
     const container = document.createElement('div')
     // 深度克隆子节点
     container.appendChild(el.cloneNode(true))

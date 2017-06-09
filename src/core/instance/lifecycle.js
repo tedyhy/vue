@@ -137,7 +137,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
 /**
  * 挂载组件
  * @param vm 实例 vm
- * @param el el
+ * @param el el 必须是 Element 元素
  * @param hydrating 与服务器渲染(SSR)相关的
  * @returns {Component}
  */
@@ -147,13 +147,14 @@ export function mountComponent (
   hydrating?: boolean
 ): Component {
   vm.$el = el
-  // 如果 vm.$options.render 不存在，说明没有设置模板，没有编译生成的 render 和 staticRenderFns
+  // 如果 vm.$options.render 不存在，说明没有设置模板选项（包括：el 和 template），也就没有编译生成的 render 和 staticRenderFns
   if (!vm.$options.render) {
     // 如果没有指定模板，则生成空的 VNode
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
-      // 非生产环境下，指定了 vm.$options.template，但是不是 '#id' 形式，或者已经指定了 vm.$options.el 或者 el，则发出警告
+      // 非生产环境下，如果指定了 vm.$options.template，但是不是 '#id' 形式的字符串，
+      // 或者已经指定了选项 el 或 有传参 el 元素，则发出警告
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
         vm.$options.el || el) {
         warn(
@@ -171,7 +172,7 @@ export function mountComponent (
       }
     }
   }
-  // 执行生命周期回调 beforeMount
+  // 调用生命周期回调钩子函数 beforeMount
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -203,13 +204,14 @@ export function mountComponent (
     }
   }
 
+  // 初始化一个 watcher 观察实例 vm 变化并更新组件
   vm._watcher = new Watcher(vm, updateComponent, noop)
   hydrating = false
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
-    // 成功挂载组件，执行生命周期回调 mounted
+    // 成功挂载组件，执行生命周期钩子函数 mounted
     vm._isMounted = true
     callHook(vm, 'mounted')
   }
@@ -312,17 +314,26 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
   }
 }
 
+/**
+ * 调用生命周期钩子方法，如：callHook(vm, 'beforeMount')
+ * @param vm Vue 实例
+ * @param hook 生命周期钩子方法
+ */
 export function callHook (vm: Component, hook: string) {
+  // 获取注册的钩子回调
   const handlers = vm.$options[hook]
   if (handlers) {
+    // 如果存在钩子回调，则遍历调用之
     for (let i = 0, j = handlers.length; i < j; i++) {
       try {
         handlers[i].call(vm)
       } catch (e) {
+        // 如有异常，则抛出异常
         handleError(e, vm, `${hook} hook`)
       }
     }
   }
+  // 如果当前实例 vm 有注册钩子事件，则触发相应钩子事件
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
   }
