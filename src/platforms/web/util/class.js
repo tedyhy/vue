@@ -2,7 +2,7 @@
 
 import { isObject } from 'shared/util'
 
-// 从 VNode 节点中获取 class
+// 从 VNode 节点中获取 class 数据
 export function genClassForVnode (vnode: VNode): string {
   let data = vnode.data
   let parentNode = vnode
@@ -21,6 +21,7 @@ export function genClassForVnode (vnode: VNode): string {
   return genClassFromData(data)
 }
 
+// merge 父子节点类数据，生成 class 和 staticClass
 function mergeClassData (child: VNodeData, parent: VNodeData): {
   staticClass: string,
   class: any
@@ -33,8 +34,9 @@ function mergeClassData (child: VNodeData, parent: VNodeData): {
   }
 }
 
-// 结合 staticClass 和 dynamicClass
+// 结合静态类 staticClass 和动态类 dynamicClass
 function genClassFromData (data: Object): string {
+  // 从 VNode 节点数据 data 中获取 class 和 staticClass 属性
   const dynamicClass = data.class
   const staticClass = data.staticClass
   if (staticClass || dynamicClass) {
@@ -59,7 +61,7 @@ export function stringifyClass (value: any): string {
   if (typeof value === 'string') {
     return value
   }
-  // 如果是数组，迭代遍历之
+  // 如果是数组，迭代遍历之，获取父子节点类
   if (Array.isArray(value)) {
     let stringified
     for (let i = 0, l = value.length; i < l; i++) {
