@@ -7,9 +7,13 @@ import { makeMap } from 'shared/util'
 const acceptValue = makeMap('input,textarea,option,select')
 export const mustUseProp = (tag: string, type: ?string, attr: string): boolean => {
   return (
+    // 如果是 'input,textarea,option,select' 中的标签，类型不是 button，属性是 value
     (attr === 'value' && acceptValue(tag)) && type !== 'button' ||
+    // 或者是 option 标签，属性是 selected
     (attr === 'selected' && tag === 'option') ||
+    // 如果是 input 标签，属性是 checked
     (attr === 'checked' && tag === 'input') ||
+    // 如果是 video 标签，属性是 muted
     (attr === 'muted' && tag === 'video')
   )
 }
