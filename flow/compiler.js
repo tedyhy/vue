@@ -28,9 +28,10 @@ declare type CompiledResult = {
   tips?: Array<string>;
 }
 
+// 声明 CompiledFunctionResult 对象类型
 declare type CompiledFunctionResult = {
-  render: Function;
-  staticRenderFns: Array<Function>;
+  render: Function; // render 函数
+  staticRenderFns: Array<Function>; // 数组
 }
 
 // 声明 ModuleOptions 类型

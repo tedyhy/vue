@@ -7,6 +7,7 @@ import { detectErrors } from './error-detector'
 import { extend, noop } from 'shared/util'
 import { warn, tip } from 'core/util/debug'
 
+// 模板编译的核心
 function baseCompile (
   template: string,
   options: CompilerOptions
@@ -21,20 +22,30 @@ function baseCompile (
   }
 }
 
+// 根据 code 生成函数，利用 new Function
 function makeFunction (code, errors) {
   try {
     return new Function(code)
   } catch (err) {
+    // 将错误存储在 errors 数组
     errors.push({ err, code })
     return noop
   }
 }
 
+// 创建模板编译器
 export function createCompiler (baseOptions: CompilerOptions) {
+  // 根据模板缓存编译函数，这里创建缓存对象
   const functionCompileCache: {
     [key: string]: CompiledFunctionResult;
   } = Object.create(null)
 
+  /**
+   * compile 方法
+   * @param template 模板字符串
+   * @param options 编译选项
+   * @returns {CompiledResult}
+   */
   function compile (
     template: string,
     options?: CompilerOptions
@@ -75,6 +86,13 @@ export function createCompiler (baseOptions: CompilerOptions) {
     return compiled
   }
 
+  /**
+   * compileToFunctions 方法
+   * @param template 模板字符串
+   * @param options 编译选项
+   * @param vm 组件实例
+   * @returns {*}
+   */
   function compileToFunctions (
     template: string,
     options?: CompilerOptions,
@@ -85,6 +103,7 @@ export function createCompiler (baseOptions: CompilerOptions) {
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production') {
       // detect possible CSP restriction
+      // 检测可能的 CSP 限制
       try {
         new Function('return 1')
       } catch (e) {
@@ -101,6 +120,7 @@ export function createCompiler (baseOptions: CompilerOptions) {
     }
 
     // check cache
+    // 校验缓存，如果存在，则直接返回
     const key = options.delimiters
       ? String(options.delimiters) + template
       : template
@@ -109,10 +129,13 @@ export function createCompiler (baseOptions: CompilerOptions) {
     }
 
     // compile
+    // 调用 compile 方法进行编译
     const compiled = compile(template, options)
 
     // check compilation errors/tips
+    // 检查编译错误或提示
     if (process.env.NODE_ENV !== 'production') {
+      // 非生产环境下，如果编译出错则发出警告
       if (compiled.errors && compiled.errors.length) {
         warn(
           `Error compiling template:\n\n${template}\n\n` +
@@ -120,15 +143,20 @@ export function createCompiler (baseOptions: CompilerOptions) {
           vm
         )
       }
+      // 如果编译有提示信息，则输出提示
       if (compiled.tips && compiled.tips.length) {
         compiled.tips.forEach(msg => tip(msg, vm))
       }
     }
 
     // turn code into functions
+    // 将代码转换成 render 函数
     const res = {}
+    // 用来存储转变过程中出现的 error
     const fnGenErrors = []
+    // 将编译生成的 compiled.render 转换成 render 函数
     res.render = makeFunction(compiled.render, fnGenErrors)
+    // 获取生成的 compiled.staticRenderFns 数组长度，根据长度生成空数组
     const l = compiled.staticRenderFns.length
     res.staticRenderFns = new Array(l)
     for (let i = 0; i < l; i++) {
@@ -140,6 +168,7 @@ export function createCompiler (baseOptions: CompilerOptions) {
     // mostly for codegen development use
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production') {
+      // 非生产环境下，如果编译没有 errors，生成 render 函数时报错，则发出警告
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
         warn(
           `Failed to generate render function:\n\n` +
@@ -149,6 +178,7 @@ export function createCompiler (baseOptions: CompilerOptions) {
       }
     }
 
+    // 将编译过的模板缓存起来
     return (functionCompileCache[key] = res)
   }
 
