@@ -62,19 +62,25 @@ export function createCompiler (baseOptions: CompilerOptions) {
     template: string,
     options?: CompilerOptions
   ): CompiledResult {
+    // 根据原始选项 baseOptions 创建最终选项 finalOptions
     const finalOptions = Object.create(baseOptions)
+    // 错误信息和提示信息集合
     const errors = []
     const tips = []
+    // 创建 warn 方法收集 errors 或 tips
     finalOptions.warn = (msg, tip) => {
       (tip ? tips : errors).push(msg)
     }
 
+    // 有传参 options 编译选项
     if (options) {
       // merge custom modules
+      // 如果有 options.modules，就将其 merge 到原始选项 baseOptions.modlues，生成最终 finalOptions.modules
       if (options.modules) {
         finalOptions.modules = (baseOptions.modules || []).concat(options.modules)
       }
       // merge custom directives
+      // 如果有 options.directives，就将其 merge 到原始选项 baseOptions.directives，生成最终 finalOptions.directives
       if (options.directives) {
         finalOptions.directives = extend(
           Object.create(baseOptions.directives),
@@ -82,6 +88,7 @@ export function createCompiler (baseOptions: CompilerOptions) {
         )
       }
       // copy other options
+      // 遍历传参 options，将除了 modules、directives 外的选项直接赋值给 finalOptions，生成最终 finalOptions
       for (const key in options) {
         if (key !== 'modules' && key !== 'directives') {
           finalOptions[key] = options[key]
@@ -89,11 +96,15 @@ export function createCompiler (baseOptions: CompilerOptions) {
       }
     }
 
+    // 调用核心方法 baseCompile 对模板进行编译，生成最终编译结果对象 compiled
     const compiled = baseCompile(template, finalOptions)
     if (process.env.NODE_ENV !== 'production') {
+      // 非生产环境下会检查编译后的语法树 compiled.ast 是否有报错，如果有则收集报错信息
       errors.push.apply(errors, detectErrors(compiled.ast))
     }
+    // 错误信息集
     compiled.errors = errors
+    // 提示信息集
     compiled.tips = tips
     return compiled
   }
@@ -132,10 +143,12 @@ export function createCompiler (baseOptions: CompilerOptions) {
     }
 
     // check cache
-    // 校验缓存，如果存在，则直接返回
+    // 检测缓存，如果存在，则直接取缓存
+    // 如果 options.delimiters 分隔符传参，则和模板字符串拼接生成最终 key
     const key = options.delimiters
       ? String(options.delimiters) + template
       : template
+    // 检测缓存，如果有则返回，不再执行后续逻辑
     if (functionCompileCache[key]) {
       return functionCompileCache[key]
     }
@@ -162,16 +175,16 @@ export function createCompiler (baseOptions: CompilerOptions) {
     }
 
     // turn code into functions
-    // 将代码转换成 render 函数
     const res = {}
-    // 用来存储转变过程中出现的 error
+    // 用来存储转换过程中出现的 error
     const fnGenErrors = []
-    // 将编译生成的 compiled.render 转换成 render 函数
+    // 将编译生成的 compiled.render 字符串转换成 render 函数
     res.render = makeFunction(compiled.render, fnGenErrors)
     // 获取生成的 compiled.staticRenderFns 数组长度，根据长度生成空数组
     const l = compiled.staticRenderFns.length
     res.staticRenderFns = new Array(l)
     for (let i = 0; i < l; i++) {
+      // 遍历 compiled.staticRenderFns，将每项字符串转换成函数，并收集转换过程中报错信息
       res.staticRenderFns[i] = makeFunction(compiled.staticRenderFns[i], fnGenErrors)
     }
 

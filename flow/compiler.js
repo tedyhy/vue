@@ -20,12 +20,13 @@ declare type CompilerOptions = {
   delimiters?: [string, string]; // template delimiters
 }
 
+// 声明 CompiledResult 对象类型，表示模板编译后的结果
 declare type CompiledResult = {
-  ast: ?ASTElement;
-  render: string;
-  staticRenderFns: Array<string>;
-  errors?: Array<string>;
-  tips?: Array<string>;
+  ast: ?ASTElement; // AST（抽象语法树）
+  render: string; // render 函数字符串
+  staticRenderFns: Array<string>; // staticRenderFns 数组
+  errors?: Array<string>; // 错误信息集
+  tips?: Array<string>; // 提示信息集
 }
 
 // 声明 CompiledFunctionResult 对象类型
@@ -67,6 +68,7 @@ declare type ASTDirective = {
 
 declare type ASTNode = ASTElement | ASTText | ASTExpression
 
+// 声明 ASTElement 类型，表示由模板字符串分析生成的抽象语法树
 declare type ASTElement = {
   type: 1;
   tag: string;
