@@ -36,6 +36,6 @@ export const baseOptions: CompilerOptions = {
   staticKeys: genStaticKeys(modules)
 }
 
-// 通过函数 createCompiler 和基本选项 baseOptions 创建编译器函数 compile、compileToFunctions
+// 通过函数 createCompiler 和基本选项 baseOptions 创建编译器函数 compile 和 compileToFunctions 数组
 const { compile, compileToFunctions } = createCompiler(baseOptions)
 export { compile, compileToFunctions }

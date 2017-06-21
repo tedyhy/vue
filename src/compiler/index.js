@@ -22,7 +22,8 @@ function baseCompile (
   }
 }
 
-// 根据 code 生成函数，利用 new Function
+// 根据 code 传参，利用内置 Function 构造器来创建函数，
+// 如果出现异常，则返回 noop 并记录错误信息
 function makeFunction (code, errors) {
   try {
     return new Function(code)
@@ -33,9 +34,20 @@ function makeFunction (code, errors) {
   }
 }
 
-// 创建模板编译器
+/**
+ * 暴露模板编译器
+ * @param baseOptions 原始编译选项
+ * @returns {{compile: compile, compileToFunctions: compileToFunctions}}
+ */
 export function createCompiler (baseOptions: CompilerOptions) {
-  // 根据模板缓存编译函数，这里创建缓存对象
+  /**
+   * 根据模板创建编译缓存池，key 为模板字符串，其值为 CompiledFunctionResult 类型对象，
+   * 其对象结构为：
+   * {
+   *   render: Function; // render 函数
+   *   staticRenderFns: Array<Function>; // 数组
+   * }
+   */
   const functionCompileCache: {
     [key: string]: CompiledFunctionResult;
   } = Object.create(null)
