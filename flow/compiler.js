@@ -1,3 +1,4 @@
+// 声明 CompilerOptions 对象类型，表示编译选项
 declare type CompilerOptions = {
   warn?: Function; // allow customizing warning in different environments; e.g. node
   expectHTML?: boolean; // only false for non-web builds
@@ -70,6 +71,7 @@ declare type ASTNode = ASTElement | ASTText | ASTExpression
 
 // 声明 ASTElement 类型，表示由模板字符串分析生成的抽象语法树
 declare type ASTElement = {
+  // 必须有的属性
   type: 1;
   tag: string;
   attrsList: Array<{ name: string; value: string }>;
@@ -77,6 +79,7 @@ declare type ASTElement = {
   parent: ASTElement | void;
   children: Array<ASTNode>;
 
+  // 可选的属性
   static?: boolean;
   staticRoot?: boolean;
   staticInFor?: boolean;

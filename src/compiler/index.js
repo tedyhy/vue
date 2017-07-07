@@ -12,13 +12,16 @@ function baseCompile (
   template: string,
   options: CompilerOptions
 ): CompiledResult {
+  // 根据模板字符串和编译选项将 html 转换成 AST
   const ast = parse(template.trim(), options)
+  // 优化 ast
   optimize(ast, options)
+  // 通过 ast generate render 字符串、staticRenderFns 字符串数组
   const code = generate(ast, options)
   return {
     ast,
-    render: code.render,
-    staticRenderFns: code.staticRenderFns
+    render: code.render, // render 字符串
+    staticRenderFns: code.staticRenderFns // staticRenderFns 字符串数组
   }
 }
 

@@ -1,5 +1,6 @@
 /* @flow */
 
+// HTML 实体编解码工具
 import { decode } from 'he'
 import { parseHTML } from './html-parser'
 import { parseText } from './text-parser'
@@ -18,15 +19,23 @@ import {
   pluckModuleFunction
 } from '../helpers'
 
+// 导出正则接口 onRE，匹配：@ 或者 v-on 指令
 export const onRE = /^@|^v-on:/
+// 导出正则接口 dirRE，匹配：v- 或 @ 或者 :
 export const dirRE = /^v-|^@|^:/
+// 导出正则接口 forAliasRE，匹配 for alias
 export const forAliasRE = /(.*?)\s+(?:in|of)\s+(.*)/
+// 导出正则接口 forIteratorRE，匹配 for 迭代器
 export const forIteratorRE = /\((\{[^}]*\}|[^,]*),([^,]*)(?:,([^,]*))?\)/
 
+// 匹配 arg 正则
 const argRE = /:(.*)$/
+// 匹配 v-bind 正则
 const bindRE = /^:|^v-bind:/
+// 匹配修饰符正则
 const modifierRE = /\.[^.]+/g
 
+// 为 decode 方法添加缓存功能
 const decodeHTMLCached = cached(decode)
 
 // configurable state
@@ -274,6 +283,11 @@ export function parse (
   return root
 }
 
+/**
+ * 处理 v-pre 指令
+ * 参考 http://cn.vuejs.org/v2/api/#v-pre
+ * @param el ASTElement 元素
+ */
 function processPre (el) {
   if (getAndRemoveAttr(el, 'v-pre') != null) {
     el.pre = true
