@@ -2,6 +2,7 @@
 
 import { parseFilters } from './parser/filter-parser'
 
+// [Vue compiler] 警告
 export function baseWarn (msg: string) {
   console.error(`[Vue compiler]: ${msg}`)
 }
@@ -15,14 +16,17 @@ export function pluckModuleFunction<F: Function> (
     : []
 }
 
+// 为 AST 元素添加 props
 export function addProp (el: ASTElement, name: string, value: string) {
   (el.props || (el.props = [])).push({ name, value })
 }
 
+// 为 AST 元素添加 attrs
 export function addAttr (el: ASTElement, name: string, value: string) {
   (el.attrs || (el.attrs = [])).push({ name, value })
 }
 
+// 为 AST 元素添加指令
 export function addDirective (
   el: ASTElement,
   name: string,
@@ -69,6 +73,7 @@ export function addHandler (
   }
 }
 
+// 获取绑定的属性值
 export function getBindingAttr (
   el: ASTElement,
   name: string,
@@ -87,6 +92,7 @@ export function getBindingAttr (
   }
 }
 
+// 从 AST 元素的 el.attrsList 里查找属性并删除
 export function getAndRemoveAttr (el: ASTElement, name: string): ?string {
   let val
   if ((val = el.attrsMap[name]) != null) {

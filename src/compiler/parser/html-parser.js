@@ -1,6 +1,6 @@
 /**
  * Not type-checking this file because it's mostly vendor code.
- * 此文件没有类型校验，因为它几乎是 vendor 代码
+ * 此文件不做类型校验，因为它里面大多是类库代码
  */
 
 /*!
@@ -29,7 +29,7 @@ const singleAttrValues = [ // 匹配单双引号
   // 属性值无引号
   /([^\s"'=<>`]+)/.source
 ]
-// 匹配属性正则
+// 匹配元素属性正则
 const attribute = new RegExp(
   '^\\s*' + singleAttrIdentifier.source +
   '(?:\\s*(' + singleAttrAssign.source + ')' +

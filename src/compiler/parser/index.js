@@ -50,6 +50,7 @@ let platformGetTagNamespace
 
 /**
  * Convert HTML string to AST.
+ * 将 HTML 字符串转换成 AST
  */
 export function parse (
   template: string,
@@ -98,11 +99,14 @@ export function parse (
     start (tag, attrs, unary) {
       // check namespace.
       // inherit parent ns if there is one
+      // 检查命名空间
       const ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag)
 
       // handle IE svg bug
+      // 处理 IE svg bug
       /* istanbul ignore if */
       if (isIE && ns === 'svg') {
+        // IE 环境下而且是 svg，则调用 guardIESVGBug 遍历处理属性
         attrs = guardIESVGBug(attrs)
       }
 
@@ -284,7 +288,8 @@ export function parse (
 }
 
 /**
- * 处理 v-pre 指令
+ * 处理 v-pre 指令，跳过这个元素和它的子元素的编译过程。
+ * 跳过大量没有指令的节点会加快编译。
  * 参考 http://cn.vuejs.org/v2/api/#v-pre
  * @param el ASTElement 元素
  */
@@ -294,6 +299,7 @@ function processPre (el) {
   }
 }
 
+// 处理原生属性
 function processRawAttrs (el) {
   const l = el.attrsList.length
   if (l) {
@@ -310,6 +316,7 @@ function processRawAttrs (el) {
   }
 }
 
+// 处理属性
 function processKey (el) {
   const exp = getBindingAttr(el, 'key')
   if (exp) {
