@@ -7,6 +7,7 @@ export function baseWarn (msg: string) {
   console.error(`[Vue compiler]: ${msg}`)
 }
 
+// 从 modules 数组的每个元素对象里摘出来属性为 key 的值（值为函数）
 export function pluckModuleFunction<F: Function> (
   modules: ?Array<Object>,
   key: string

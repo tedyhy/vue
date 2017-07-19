@@ -67,6 +67,7 @@ declare type ASTDirective = {
   modifiers: ?ASTModifiers;
 }
 
+// 声明 ASTNode 类型，可以是 ASTElement | ASTText | ASTExpression 类型中的一种
 declare type ASTNode = ASTElement | ASTText | ASTExpression
 
 // 声明 ASTElement 类型，表示由模板字符串分析生成的抽象语法树

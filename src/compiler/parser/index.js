@@ -56,23 +56,38 @@ export function parse (
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
+  // allow customizing warning in different environments; e.g. node
+  // 允许定制不同环境的警告
+  // 如果有 options.warn 方法，则使用之，否则使用最基本的 [Vue compiler] 警告方法 baseWarn
   warn = options.warn || baseWarn
+  // check the namespace for a tag
+  // 检查一个标签的 namespace，如果 options.getTagNamespace 方法不存在，则默认返回 false
   platformGetTagNamespace = options.getTagNamespace || no
+  // check if an attribute should be bound as a property
+  // 检查标签的 attribute 属性是否被绑定为一个 AST 属性
   platformMustUseProp = options.mustUseProp || no
+  // check if a tag needs to preserve whitespace
+  // 检查标签是否需要保留空格，默认返回 false
   platformIsPreTag = options.isPreTag || no
+  // 提取 options.modules 里的 preTransformNode 方法
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
+  // 提取 options.modules 里的 transformNode 方法
   transforms = pluckModuleFunction(options.modules, 'transformNode')
+  // 提取 options.modules 里的 postTransformNode 方法
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
+  // 获取分隔符
   delimiters = options.delimiters
 
   const stack = []
+  // 是否保留空白
   const preserveWhitespace = options.preserveWhitespace !== false
   let root
   let currentParent
   let inVPre = false
   let inPre = false
-  let warned = false
+  let warned = false // 发出警告标志
 
+  // 警告一次
   function warnOnce (msg) {
     if (!warned) {
       warned = true
@@ -266,6 +281,7 @@ export function parse (
       text = inPre || text.trim()
         ? decodeHTMLCached(text)
         // only preserve whitespace if its not right after a starting tag
+        // 只有在起始标签之后才保留空格
         : preserveWhitespace && children.length ? ' ' : ''
       if (text) {
         let expression
@@ -456,11 +472,18 @@ function processComponent (el) {
   }
 }
 
+/**
+ * 处理 attribute
+ * @param el ASTElement 元素
+ */
 function processAttrs (el) {
   const list = el.attrsList
   let i, l, name, rawName, value, modifiers, isProp
+  // 遍历 el.attrsList
   for (i = 0, l = list.length; i < l; i++) {
+    // rawName 当前属性原来的键名，name 之后会被处理
     name = rawName = list[i].name
+    // 当前属性的值
     value = list[i].value
     if (dirRE.test(name)) {
       // mark element as dynamic
@@ -507,6 +530,7 @@ function processAttrs (el) {
       }
     } else {
       // literal attribute
+      // 非生产环境下，字面属性处理
       if (process.env.NODE_ENV !== 'production') {
         const expression = parseText(value, delimiters)
         if (expression) {
